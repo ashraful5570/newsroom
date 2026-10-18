@@ -1,0 +1,58 @@
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: newsroom
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: newsroom
+    ports: ['127.0.0.1:5432:5432']
+    volumes: ['postgres-data:/var/lib/postgresql/data']
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U newsroom -d newsroom']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  migrate:
+    build:
+      context: .
+      target: worker
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://newsroom:${POSTGRES_PASSWORD}@db:5432/newsroom
+      DATABASE_SSL: 'false'
+    command: ['npm', 'run', 'db:migrate']
+    depends_on:
+      db: { condition: service_healthy }
+  web:
+    build:
+      context: .
+      target: runner
+      args:
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:-}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY:-}
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://newsroom:${POSTGRES_PASSWORD}@db:5432/newsroom
+      DATABASE_SSL: 'false'
+      DATA_DIR: /app/.data
+    ports: ['127.0.0.1:3000:3000']
+    volumes: ['sandbox-data:/app/.data']
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+    restart: unless-stopped
+  worker:
+    build:
+      context: .
+      target: worker
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://newsroom:${POSTGRES_PASSWORD}@db:5432/newsroom
+      DATABASE_SSL: 'false'
+      DATA_DIR: /app/.data
+    volumes: ['sandbox-data:/app/.data']
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+    restart: unless-stopped
+volumes:
+  postgres-data:
+  sandbox-data:
