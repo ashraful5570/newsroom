@@ -10,6 +10,14 @@ A private editorial workspace for a Bangladesh-based publisher: discover permitt
 
 The screenshot shows the actual local application with no invented news or connected integrations.
 
+## Test in your browser without downloading
+
+This branch includes a GitHub Codespaces configuration. On GitHub, select **Code → Codespaces → Create codespace on codex/newsroom-platform**, or use [the Codespaces creation page for this repository](https://codespaces.new/ashraful5570/newsroom/tree/codex/newsroom-platform). Confirm the selected branch is `codex/newsroom-platform` before creating the workspace.
+
+Codespaces requires account access and may incur charges. After container creation and dependency installation, the development server and worker start automatically. Open the **Ports** tab and choose **Open in Browser** for port **3000**. Keep port visibility **Private**, because the initial sandbox bypasses authentication. Initial startup may take several minutes. If startup fails, inspect `.data/codespaces-web.log` and `.data/codespaces-worker.log`; rerun `bash scripts/codespaces-start.sh` after fixing the cause.
+
+Browser startup has not been validated on a real GitHub Codespace in this session. The configuration and shell syntax have been checked locally; the application itself passed the local production-browser scenarios documented below.
+
 ## Get the project
 
 On this GitHub branch, choose **Code → Download ZIP**, extract it, and open a terminal in the extracted project folder. Alternatively, clone this branch with Git. Node.js 24 is required for the commands below. This repository contains application source; GitHub itself does not host the running Next.js app or background worker.

@@ -1,0 +1,11 @@
+{
+  "name": "Newsroom — browser development workspace",
+  "build": { "dockerfile": "Dockerfile" },
+  "remoteUser": "node",
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": { "label": "Newsroom", "protocol": "http", "onAutoForward": "notify" }
+  },
+  "postCreateCommand": "npm ci --no-audit --no-fund",
+  "postStartCommand": "bash scripts/codespaces-start.sh"
+}

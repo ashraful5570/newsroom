@@ -1,0 +1,5 @@
+FROM node:24-bookworm
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends fonts-noto-core ca-certificates git \
+    && rm -rf /var/lib/apt/lists/*
+USER node
